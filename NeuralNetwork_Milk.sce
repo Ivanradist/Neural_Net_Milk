@@ -1,6 +1,5 @@
 //Neural Network determines the parameters of milk
 // on the basis of infrared spectroscopy 
-// Author Ivanradist 05.11.2019 ivanraist@ya.ru
 clc;
 PTH='D:\zProjects\2019_Neural_Milk\';
 
@@ -61,7 +60,6 @@ end
 //Выходные данные представляем в виде интервала
 // n - нижний порог, v - верхний порог
 // Точность в %
-//interval = 5;
 y1n = y1 - (max(y1)*interval)/(2*100);
 y1v = y1 + (max(y1)*interval)/(2*100);
 y2n = y2 - (max(y2)*interval)/(2*100);
@@ -119,8 +117,6 @@ elseif (f_act == 3) then
 end
 
 // Разделение данных на данные для обучения ИНС и данные для проверки ИНС
-//b = 33; // Граница
-//---------------
 s1_u = s1(1,1:b); 
 s2_u = s2(1,1:b);  
 s3_u = s3(1,1:b); 
@@ -169,7 +165,6 @@ numNeurons = [4 8 8];
 // 'ann_d_logsig_activ' - Derivative of Logistic activation function
 // 'ann_d_purelin_activ' - Derivative of Linear activation function (=1)
 
-//af = ['ann_log_activ','ann_purelin_activ'];
 af = ['ann_log_activ','ann_purelin_activ'];
 
 // это скорость обучения
@@ -186,7 +181,6 @@ W = ann_FFBP_gd(FINteach,FOUTteach,numNeurons);
 //Тест ИНС
 //------------
 FINtest = [s1_t;s2_t;s3_t;s4_t];
-//y = ann_FFBP_run(FINteach,W); // Использование ИНС
 y = ann_FFBP_run(FINtest,W); // Использование ИНС
 //y = ann_FFBP_run(FINtest,W,af); // Использование ИНС. Расширенная функция
 
@@ -360,10 +354,3 @@ tbly4 = [y4_t,y4rez,y4mis,y4mispercent];
 disp('y4');
 disp('Ожидаемое|Рассчитанное|Ошибка |Ошибка %');
 disp(tbly4(2:size(tbly4,1),:));
-
-
-
-
-
-//Сокращения:
-
