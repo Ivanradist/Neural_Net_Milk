@@ -47,7 +47,7 @@ txt_1 = ['Разброс выходных данных в % ';...
     
 //Список значений (по умолчанию) начальных установок
 txt_2 = ['5';...
-'25'];
+'30'];
 //Окно меню начальных установок  
 sig = x_mdialog('Начальные установки параметров обработки',txt_1,txt_2);
 if sum(size(sig))~=0 then
@@ -134,18 +134,18 @@ y3v_u = y3v(1,1:b);
 y4n_u = y4n(1,1:b); 
 y4v_u = y4v(1,1:b); 
 //---------------
-s1_t = s1(1,b+1:36); 
-s2_t = s2(1,b+1:36); 
-s3_t = s3(1,b+1:36); 
-s4_t = s4(1,b+1:36); 
-y1n_t = y1n(1,b+1:36); 
-y1v_t = y1v(1,b+1:36); 
-y2n_t = y2n(1,b+1:36); 
-y2v_t = y2v(1,b+1:36); 
-y3n_t = y3n(1,b+1:36); 
-y3v_t = y3v(1,b+1:36); 
-y4n_t = y4n(1,b+1:36); 
-y4v_t = y4v(1,b+1:36); 
+s1_t = s1(1,b:36); 
+s2_t = s2(1,b:36); 
+s3_t = s3(1,b:36); 
+s4_t = s4(1,b:36); 
+y1n_t = y1n(1,b:36); 
+y1v_t = y1v(1,b:36); 
+y2n_t = y2n(1,b:36); 
+y2v_t = y2v(1,b:36); 
+y3n_t = y3n(1,b:36); 
+y3v_t = y3v(1,b:36); 
+y4n_t = y4n(1,b:36); 
+y4v_t = y4v(1,b:36); 
 //---------------
 
 //------------
@@ -241,14 +241,14 @@ y_cor = ann_FFBP_run(FINteach,W); // Использование ИНС. Расш
 //------------
 //Обработка результата
 //------------
-y1n_cor = y(1,:);
-y1v_cor = y(2,:);
-y2n_cor = y(3,:);
-y2v_cor = y(4,:);
-y3n_cor = y(5,:);
-y3v_cor = y(6,:);
-y4n_cor = y(7,:);
-y4v_cor = y(8,:);
+y1n_cor = y_cor(1,:);
+y1v_cor = y_cor(2,:);
+y2n_cor = y_cor(3,:);
+y2v_cor = y_cor(4,:);
+y3n_cor = y_cor(5,:);
+y3v_cor = y_cor(6,:);
+y4n_cor = y_cor(7,:);
+y4v_cor = y_cor(8,:);
 
 if (f_act == 1) then
     // 1. Денормализация. Линейная. Достаточно только нормирования
@@ -291,45 +291,75 @@ cor1 = mean(y1)/mean(y1n_cor);
 cor2 = mean(y2)/mean(y2n_cor);
 cor3 = mean(y3)/mean(y3n_cor);
 cor4 = mean(y4)/mean(y4n_cor);
-    
+
 disp('---------------Ошибка результата------------------');
 y1rez = (cor1*(y1n_rez+y1v_rez)/2)';
 y2rez = (cor2*(y2n_rez+y2v_rez)/2)';
 y3rez = (cor3*(y3n_rez+y3v_rez)/2)';
 y4rez = (cor4*(y4n_rez+y4v_rez)/2)';
 
-y1_t = y1(1,b+1:36)'; 
-y2_t = y2(1,b+1:36)';
-y3_t = y3(1,b+1:36)';
-y4_t = y4(1,b+1:36)';
+y1_t = y1(1,b:36)'; 
+y2_t = y2(1,b:36)';
+y3_t = y3(1,b:36)';
+y4_t = y4(1,b:36)';
+
+//------------------------------------------
+//Подбор коэффициентов коррекции. Шаг №2
+//-------------------------------------------
+const1 = y1rez(1,1)-y1_t(1,1);
+const2 = y2rez(1,1)-y2_t(1,1);
+const3 = y3rez(1,1)-y3_t(1,1);
+const4 = y4rez(1,1)-y4_t(1,1);
+
+y1rez = y1rez-const1;
+y2rez = y2rez-const2;
+y3rez = y3rez-const3;
+y4rez = y4rez-const4;
+//-------------------------------------------
 
 y1mis=y1rez-y1_t;
-y1mispercent=(y1mis*100)/max(y1_t);
+//y1mispercent=(y1mis*100)/max(y1_t);
+y1mispercent = [(y1mis(1,1)*100)/y1_t(1,1)]
+for i = 2:size(y1mis,1)
+    y1mispercent = [y1mispercent;(y1mis(i,1)*100)/y1_t(i,1)]
+end
 tbly1 = [y1_t,y1rez,y1mis,y1mispercent];
 disp('y1');
 disp('Ожидаемое|Рассчитанное|Ошибка |Ошибка %');
-disp(tbly1);
+disp(tbly1(2:size(tbly1,1),:));
 //--------------------------
 y2mis=y2rez-y2_t;
-y2mispercent=(y2mis*100)/max(y2_t);
+//y2mispercent=(y2mis*100)/max(y2_t);
+y2mispercent = [(y2mis(1,1)*100)/y2_t(1,1)]
+for i = 2:size(y2mis,1)
+    y2mispercent = [y2mispercent;(y2mis(i,1)*100)/y2_t(i,1)]
+end
 tbly2 = [y2_t,y2rez,y2mis,y2mispercent];
 disp('y2');
 disp('Ожидаемое|Рассчитанное|Ошибка |Ошибка %');
-disp(tbly2);
+disp(tbly2(2:size(tbly2,1),:));
 //---------------------------
 y3mis=y3rez-y3_t;
-y3mispercent=(y3mis*100)/max(y3_t);
+//y3mispercent=(y3mis*100)/max(y3_t);
+y3mispercent = [(y3mis(1,1)*100)/y3_t(1,1)]
+for i = 2:size(y3mis,1)
+    y3mispercent = [y3mispercent;(y3mis(i,1)*100)/y3_t(i,1)]
+end
 tbly3 = [y3_t,y3rez,y3mis,y3mispercent];
 disp('y3');
 disp('Ожидаемое|Рассчитанное|Ошибка |Ошибка %');
-disp(tbly3);
+disp(tbly3(2:size(tbly3,1),:));
 //----------------------------
 y4mis=y4rez-y4_t;
-y4mispercent=(y4mis*100)/max(y4_t);
+//y4mispercent=(y4mis*100)/max(y4_t);
+y4mispercent = [(y4mis(1,1)*100)/y4_t(1,1)]
+for i = 2:size(y4mis,1)
+    y4mispercent = [y4mispercent;(y4mis(i,1)*100)/y4_t(i,1)]
+end
 tbly4 = [y4_t,y4rez,y4mis,y4mispercent];
 disp('y4');
 disp('Ожидаемое|Рассчитанное|Ошибка |Ошибка %');
-disp(tbly4);
+disp(tbly4(2:size(tbly4,1),:));
 
 
 
